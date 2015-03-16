@@ -2,6 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="lib/autoCompltr-master/dist/css/autoCompltr.css">
     <title>Web Components - complex filter</title>
     <template id="complexFilterTemplate">
         <style>
@@ -12,50 +13,72 @@
                 width: 12em;
                 height: 8em;
             }
+            .checkbox-div {
+                height: 5em;
+                overflow: auto;
+            }
         </style>
         <div class="outer">
             <div class="title">
                 <content select=".title-holder"></content>
             </div>
-            <content select=".checkbox-holder"></content>
-            <a href="" class="show-more-link">Add more</a>
+            <div class="checkbox-div"><content select=".checkbox-holder"></content></div>
+            <div class="auto-complete-popup"></div>
         </div>
+        <script>
+
+        </script>
     </template>
-    <style>
-        .checkbox-holder {
-            height: 90px;
-            overflow: auto;
-        }
-    </style>
 </head>
 <body>
     <complex-filter>
-        <label class="title-holder">Books</label>
+        <label class="title-holder">Portfolio</label>
         <div class="checkbox-holder"></div>
     </complex-filter>
     <script src="lib/webcomponents.js"></script>
+    <script src="lib/autoCompltr-master/dist/js/autoCompltr.js"></script>
     <script>
         "use strict";
+        var listElements = ["Portfolio 1", "Portfolio 2", "Portfolio 3", "Portfolio 4","Portfolio 5", "Portfolio 6", "Portfolio 7", "Portfolio 8"];
+        
         var proto = Object.create(HTMLElement.prototype);
         proto.createdCallback = function() {
             var root = this.createShadowRoot();
             var template = document.querySelector("#complexFilterTemplate");
-            var listElements = ["a", "b", "c", "d","e", "f", "g", "h"];
+
             for(var i in listElements) {
                 var tmpDiv = document.createElement("div");
-                tmpDiv.appendChild(document.createTextNode(listElements[i]));
+                tmpDiv.style.display = "block";
+                tmpDiv.style.marginLeft = "80px";
                 var tmpCheck = document.createElement("input");
                 tmpCheck.setAttribute("type", "checkbox");
-                tmpCheck.setAttribute("value", i);
                 tmpDiv.appendChild(tmpCheck);
+                tmpDiv.appendChild(document.createTextNode(listElements[i]));
                 document.querySelector(".checkbox-holder").appendChild(tmpDiv);
+
+                var observer = new MutationObserver(function(mutations, observer) {
+                  mutations.forEach(function(record) {
+                    for (var i = 0, node; node = record.addedNodes[i]; i++) {
+                      console.log(node);
+                    }
+                  });
+                });
+
+                observer.observe(tmpDiv, {
+                    childList: true
+                });
             }
             var clone = document.importNode(template.content, true);
             root.appendChild(clone);
+            var autoCompltr = new AutoCompltr(root.querySelector(".auto-complete-popup"));
+            autoCompltr.setSuggestionsList(listElements);
+            autoCompltr.clickableSuggestion(listElements);
         };
         var complexFilter = document.registerElement("complex-filter",{
           prototype : proto
         });
+
+
     </script>
 </body>
 </html>
