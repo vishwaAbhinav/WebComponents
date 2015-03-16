@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Web Components - complex filter</title>
+    <template id="complexFilterTemplate">
+        <style>
+            .outer {
+                border: 2px solid brown;
+                background: navajowhite;
+                font-size: 12pt;
+                width: 12em;
+                height: 8em;
+            }
+        </style>
+        <div class="outer">
+            <div class="title">
+                <content select=".title-holder"></content>
+            </div>
+            <content select=".checkbox-holder"></content>
+            <a href="" class="show-more-link">Add more</a>
+        </div>
+    </template>
+    <style>
+        .checkbox-holder {
+            height: 90px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <complex-filter>
+        <label class="title-holder">Books</label>
+        <div class="checkbox-holder"></div>
+    </complex-filter>
+    <script src="lib/webcomponents.js"></script>
+    <script>
+        "use strict";
+        var proto = Object.create(HTMLElement.prototype);
+        proto.createdCallback = function() {
+            var root = this.createShadowRoot();
+            var template = document.querySelector("#complexFilterTemplate");
+            var listElements = ["a", "b", "c", "d","e", "f", "g", "h"];
+            for(var i in listElements) {
+                var tmpDiv = document.createElement("div");
+                tmpDiv.appendChild(document.createTextNode(listElements[i]));
+                var tmpCheck = document.createElement("input");
+                tmpCheck.setAttribute("type", "checkbox");
+                tmpCheck.setAttribute("value", i);
+                tmpDiv.appendChild(tmpCheck);
+                document.querySelector(".checkbox-holder").appendChild(tmpDiv);
+            }
+            var clone = document.importNode(template.content, true);
+            root.appendChild(clone);
+        };
+        var complexFilter = document.registerElement("complex-filter",{
+          prototype : proto
+        });
+    </script>
+</body>
+</html>
