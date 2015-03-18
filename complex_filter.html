@@ -23,29 +23,51 @@
                 <content select=".title-holder"></content>
             </div>
             <div class="checkbox-div"><content select=".checkbox-holder"></content></div>
-            <div class="auto-complete-popup"></div>
+            <input class="auto-complete-input" placeholder="Search in " type="text"/>
         </div>
-        <script>
-
-        </script>
     </template>
 </head>
 <body>
-    <complex-filter>
-        <label class="title-holder">Portfolio</label>
-        <div class="checkbox-holder"></div>
-    </complex-filter>
     <script src="lib/webcomponents.js"></script>
-    <script src="lib/autoCompltr-master/dist/js/autoCompltr.js"></script>
     <script>
         "use strict";
-        var listElements = ["Portfolio 1", "Portfolio 2", "Portfolio 3", "Portfolio 4","Portfolio 5", "Portfolio 6", "Portfolio 7", "Portfolio 8"];
-        
-        var proto = Object.create(HTMLElement.prototype);
-        proto.createdCallback = function() {
-            var root = this.createShadowRoot();
-            var template = document.querySelector("#complexFilterTemplate");
 
+        if(document.currentScript) {
+            var importDoc = document.currentScript.ownerDocument;
+        }
+        else {
+            var importDoc = document._currentScript.ownerDocument;            
+        }
+
+        var proto = Object.create(HTMLElement.prototype);
+
+        Object.defineProperty(proto, "listElements", { 
+            elements : [],
+            get : function() {return this.elements},
+            set : function(listElements) {this.elements = listElements}
+        });
+
+        proto.getHeader = function() {
+        }
+
+        proto.setHeader = function(headerLabel) {
+            var header = document.createElement("label");
+            header.innerHTML = headerLabel;
+            header.setAttribute("class", "title-holder");
+            this.appendChild(header);
+        }
+
+        proto.getUniverse = function() {
+            return this.listElements;
+        }
+
+        proto.setUniverse = function(listElements) {
+            console.log("Universe is being set for " + this.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + listElements);
+
+            var checkboxHolder = document.createElement("div");
+            checkboxHolder.setAttribute("class","checkbox-holder")
+
+            this.listElements = listElements;
             for(var i in listElements) {
                 var tmpDiv = document.createElement("div");
                 tmpDiv.style.display = "block";
@@ -54,30 +76,39 @@
                 tmpCheck.setAttribute("type", "checkbox");
                 tmpDiv.appendChild(tmpCheck);
                 tmpDiv.appendChild(document.createTextNode(listElements[i]));
-                document.querySelector(".checkbox-holder").appendChild(tmpDiv);
-
-                var observer = new MutationObserver(function(mutations, observer) {
-                  mutations.forEach(function(record) {
-                    for (var i = 0, node; node = record.addedNodes[i]; i++) {
-                      console.log(node);
-                    }
-                  });
-                });
-
-                observer.observe(tmpDiv, {
-                    childList: true
-                });
+                checkboxHolder.appendChild(tmpDiv);
             }
+            this.appendChild(checkboxHolder);
+        };
+
+        proto.createdCallback = function() {
+            var root = this.createShadowRoot();
+            var template = document.querySelector("#complexFilterTemplate");
+            if(!template) {
+                template = importDoc.querySelector("#complexFilterTemplate");
+            }
+
+            var checkboxHolder = this.querySelector("ul");
+            var listElements = [];
+            if(checkboxHolder) {
+                var listItems = checkboxHolder.getElementsByTagName("li");
+                for (var i = 0; i < listItems.length; i++) {
+                   listElements.push(listItems[i].innerHTML);
+                }
+                this.setUniverse(listElements);
+            }
+
             var clone = document.importNode(template.content, true);
             root.appendChild(clone);
-            var autoCompltr = new AutoCompltr(root.querySelector(".auto-complete-popup"));
-            autoCompltr.setSuggestionsList(listElements);
-            autoCompltr.clickableSuggestion(listElements);
         };
-        var complexFilter = document.registerElement("complex-filter",{
+
+        proto.setTitle = function(label) {
+
+        }
+
+        var ComplexFilter = document.registerElement("complex-filter",{
           prototype : proto
         });
-
 
     </script>
 </body>
