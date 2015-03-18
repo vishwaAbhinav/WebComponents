@@ -2,7 +2,6 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="lib/autoCompltr-master/dist/css/autoCompltr.css">
     <title>Web Components - complex filter</title>
     <template id="complexFilterTemplate">
         <style>
@@ -32,34 +31,45 @@
     <script>
         "use strict";
 
-        if(document.currentScript) {
+        if(document.currentScript && document.currentScript != null) {
             var importDoc = document.currentScript.ownerDocument;
         }
         else {
-            var importDoc = document._currentScript.ownerDocument;            
+            var importDoc = document._currentScript.ownerDocument;
         }
 
         var proto = Object.create(HTMLElement.prototype);
+
+        Object.defineProperty(proto, "header", { 
+            headerLabel : "",
+            get : function() {return this.headerLabel},
+            set : function(headerLabel) {this.headerLabel = headerLabel}
+        });
+
+        proto.getHeader = function() {
+            return this.header;
+        }
+
+        proto.setHeader = function(headerLabel) {
+            this.header = headerLabel;
+
+            var header = document.createElement("label");
+            header.innerHTML = headerLabel;
+            header.setAttribute("class", "title-holder");
+            this.appendChild(header);
+
+            this.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + headerLabel;
+        }
+
+        proto.getUniverse = function() {
+            return this.listElements;
+        }
 
         Object.defineProperty(proto, "listElements", { 
             elements : [],
             get : function() {return this.elements},
             set : function(listElements) {this.elements = listElements}
         });
-
-        proto.getHeader = function() {
-        }
-
-        proto.setHeader = function(headerLabel) {
-            var header = document.createElement("label");
-            header.innerHTML = headerLabel;
-            header.setAttribute("class", "title-holder");
-            this.appendChild(header);
-        }
-
-        proto.getUniverse = function() {
-            return this.listElements;
-        }
 
         proto.setUniverse = function(listElements) {
             console.log("Universe is being set for " + this.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + listElements);
@@ -74,6 +84,7 @@
                 tmpDiv.style.marginLeft = "80px";
                 var tmpCheck = document.createElement("input");
                 tmpCheck.setAttribute("type", "checkbox");
+                tmpCheck.setAttribute("onChange", "filterListChanged(this)");
                 tmpDiv.appendChild(tmpCheck);
                 tmpDiv.appendChild(document.createTextNode(listElements[i]));
                 checkboxHolder.appendChild(tmpDiv);
@@ -98,18 +109,27 @@
                 this.setUniverse(listElements);
             }
 
+            var headerLabel = this.querySelector(".title-holder");
+            if(headerLabel) {
+                this.header = headerLabel.innerHTML;
+            }
+
             var clone = document.importNode(template.content, true);
+
+            if(this.header) {
+                clone.querySelector(".auto-complete-input").placeholder = "Search in " + this.header;
+            }
+
             root.appendChild(clone);
         };
-
-        proto.setTitle = function(label) {
-
-        }
 
         var ComplexFilter = document.registerElement("complex-filter",{
           prototype : proto
         });
 
+        function filterListChanged(element) {
+            console.log(element.parentElement.innerText + " selected");
+        }
     </script>
 </body>
 </html>
