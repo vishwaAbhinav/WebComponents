@@ -38,7 +38,8 @@
             var importDoc = document._currentScript.ownerDocument;
         }
 
-        var proto = Object.create(HTMLElement.prototype);
+        var proto = Object.create(HTMLElement.prototype, {
+        });
 
         Object.defineProperty(proto, "header", { 
             headerLabel : "",
@@ -53,7 +54,10 @@
         proto.setHeader = function(headerLabel) {
             this.header = headerLabel;
 
-            var header = document.createElement("label");
+            var header = this.querySelector("complex-filter .title-holder");
+            if(!header) {
+                header = document.createElement("label");
+            }
             header.innerHTML = headerLabel;
             header.setAttribute("class", "title-holder");
             this.appendChild(header);
@@ -70,6 +74,28 @@
             get : function() {return this.elements},
             set : function(listElements) {this.elements = listElements}
         });
+
+        proto.fireFilterListChangedEvent = function (checkboxState, checkboxText) {
+            if(!this.filterList) {
+                this.filterList = [];
+            }
+            var index = this.filterList.indexOf(checkboxText);
+            if(checkboxState) {
+                if(index == -1) {
+                    this.filterList.push(checkboxText);
+                }
+            }
+            else {
+                if(index > -1) {
+                    this.filterList.splice(index, 1);
+                }
+            }
+            //console.log(protoObj.filterList);
+
+            var event =  new CustomEvent('filterListChanged', {'detail' : this.filterList});
+
+            this.dispatchEvent(event);
+        }
 
         proto.setUniverse = function(listElements) {
             console.log("Universe is being set for " + this.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + listElements);
@@ -88,27 +114,7 @@
                 //tmpCheck.setAttribute("onchange", "filterListChanged(this)");
                 var protoObj = this;
                 tmpCheck.addEventListener("change", function() {
-                    if(!protoObj.filterList) {
-                        protoObj.filterList = [];
-                    }
-                    var index = protoObj.filterList.indexOf(this.parentElement.innerText);
-                    if(this.checked) {
-                        if(index == -1) {
-                            protoObj.filterList.push(this.parentElement.innerText);
-                        }
-                    }
-                    else {
-                        if(index > -1) {
-                            protoObj.filterList.splice(index, 1);
-                        }
-                    }
-                    //console.log(protoObj.filterList);
-
-                    var event =  new CustomEvent('filterListChanged', {'detail' : protoObj.filterList});
-
-                    protoObj.dispatchEvent(event);
-
-                    return protoObj.filterList;
+                    protoObj.fireFilterListChangedEvent(this.checked, this.parentElement.innerText);
                 });
                 tmpDiv.appendChild(tmpCheck);
                 tmpDiv.appendChild(document.createTextNode(listElements[i]));
@@ -158,19 +164,6 @@
           prototype : proto
         });
 
-        function filterListChanged(filterList, labelString) {
-            console.log(filterList);
-            console.log(labelString);
-            /*
-            if(filterList) {
-                filterList.push(labelString);
-            }
-            else {
-                filterList = [];
-            }
-            */
-            console.log(filterList);
-        }
     </script>
 </body>
 </html>
