@@ -6,15 +6,20 @@
 	</head>
 	<body>
 		<script>
+			"use strict";
 			var Bundles = new ComplexFilter();
 			Bundles.setHeader("Bundles");
 
 			var listElements = ["Bundle 1", "Bundle 2", "Bundle 3", "Bundle 4","Bundle 5", "Bundle 6", "Bundle 7", "Bundle 8"];
 			Bundles.setUniverse(listElements);
 			document.body.appendChild(Bundles);
+
+			Bundles.addEventListener("filterListChanged", function(e) {
+				console.log(e.detail);
+			});
 		</script>
 		
-		<complex-filter>
+		<complex-filter id="portfolio">
 			<label class="title-holder">Portfolio</label>
 			<ul>
 				<li>Portfolio 1</li>
@@ -24,4 +29,10 @@
 				<li>Portfolio 5</li>
 			</ul>
 		</complex-filter>
+		<script>
+			var Portfolio = document.getElementById("portfolio");
+			Portfolio.addEventListener("filterListChanged", function(e) {
+				console.log(e.detail);
+			});
+		</script>
 </html>

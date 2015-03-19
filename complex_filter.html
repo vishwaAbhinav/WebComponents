@@ -102,7 +102,12 @@
                             protoObj.filterList.splice(index, 1);
                         }
                     }
-                    console.log(protoObj.filterList);
+                    //console.log(protoObj.filterList);
+
+                    var event =  new CustomEvent('filterListChanged', {'detail' : protoObj.filterList});
+
+                    protoObj.dispatchEvent(event);
+
                     return protoObj.filterList;
                 });
                 tmpDiv.appendChild(tmpCheck);
