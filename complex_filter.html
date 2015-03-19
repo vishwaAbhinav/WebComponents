@@ -84,13 +84,39 @@
                 tmpDiv.style.marginLeft = "80px";
                 var tmpCheck = document.createElement("input");
                 tmpCheck.setAttribute("type", "checkbox");
-                tmpCheck.setAttribute("onChange", "filterListChanged(this)");
+                //tmpCheck.setAttribute("checked", true);
+                //tmpCheck.setAttribute("onchange", "filterListChanged(this)");
+                var protoObj = this;
+                tmpCheck.addEventListener("change", function() {
+                    if(!protoObj.filterList) {
+                        protoObj.filterList = [];
+                    }
+                    var index = protoObj.filterList.indexOf(this.parentElement.innerText);
+                    if(this.checked) {
+                        if(index == -1) {
+                            protoObj.filterList.push(this.parentElement.innerText);
+                        }
+                    }
+                    else {
+                        if(index > -1) {
+                            protoObj.filterList.splice(index, 1);
+                        }
+                    }
+                    console.log(protoObj.filterList);
+                    return protoObj.filterList;
+                });
                 tmpDiv.appendChild(tmpCheck);
                 tmpDiv.appendChild(document.createTextNode(listElements[i]));
                 checkboxHolder.appendChild(tmpDiv);
             }
             this.appendChild(checkboxHolder);
         };
+
+        Object.defineProperty(proto, "filterList", {
+            filterElements: [],
+            get: function() {return this.filterElements;},
+            set: function(filterElements) {this.filterElements = filterElements;}
+        });
 
         proto.createdCallback = function() {
             var root = this.createShadowRoot();
@@ -127,8 +153,18 @@
           prototype : proto
         });
 
-        function filterListChanged(element) {
-            console.log(element.parentElement.innerText + " selected");
+        function filterListChanged(filterList, labelString) {
+            console.log(filterList);
+            console.log(labelString);
+            /*
+            if(filterList) {
+                filterList.push(labelString);
+            }
+            else {
+                filterList = [];
+            }
+            */
+            console.log(filterList);
         }
     </script>
 </body>
