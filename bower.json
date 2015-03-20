@@ -1,0 +1,14 @@
+{
+  "name": "WebComponents",
+  "version": "0.0.1",
+  "homepage": "https://github.com/vishwaAbhinav/WebComponents",
+  "authors": [
+    "Abhinav Vishwa <avishwa18@gmail.com>"
+  ],
+  "description": "Experiments with webcomponents",
+  "main": "lib/webcomponents.js",
+  "private": true,
+  "dependencies": {
+    "jquery-custom-scrollbar": "https://github.com/mzubala/jquery-custom-scrollbar.git#~0.5.5"
+  }
+}
