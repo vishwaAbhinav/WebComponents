@@ -3,6 +3,12 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Web Components - complex filter</title>
+    
+    <link rel="stylesheet" href="bower_components/jquery-custom-scrollbar/jquery.custom-scrollbar.css" />
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-custom-scrollbar/jquery.custom-scrollbar.js"></script>
+
     <template id="complexFilterTemplate">
         <style>
             .outer {
@@ -14,6 +20,7 @@
             }
             .checkbox-div {
                 height: 5em;
+                width: 12em;
                 overflow: auto;
             }
         </style>
@@ -21,7 +28,7 @@
             <div class="title">
                 <content select=".title-holder"></content>
             </div>
-            <div class="checkbox-div"><content select=".checkbox-holder"></content></div>
+            <div class="checkbox-div"></div>
             <input class="auto-complete-input" placeholder="Search in " type="text"/>
         </div>
     </template>
@@ -90,7 +97,6 @@
                     this.filterList.splice(index, 1);
                 }
             }
-            //console.log(protoObj.filterList);
 
             var event =  new CustomEvent('filterListChanged', {'detail' : this.filterList});
 
@@ -100,27 +106,30 @@
         proto.setUniverse = function(listElements) {
             console.log("Universe is being set for " + this.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + listElements);
 
-            var checkboxHolder = document.createElement("div");
-            checkboxHolder.setAttribute("class","checkbox-holder")
-
             this.listElements = listElements;
+
             for(var i in listElements) {
                 var tmpDiv = document.createElement("div");
                 tmpDiv.style.display = "block";
                 tmpDiv.style.marginLeft = "80px";
                 var tmpCheck = document.createElement("input");
                 tmpCheck.setAttribute("type", "checkbox");
-                //tmpCheck.setAttribute("checked", true);
-                //tmpCheck.setAttribute("onchange", "filterListChanged(this)");
+
                 var protoObj = this;
                 tmpCheck.addEventListener("change", function() {
                     protoObj.fireFilterListChangedEvent(this.checked, this.parentElement.innerText);
                 });
                 tmpDiv.appendChild(tmpCheck);
                 tmpDiv.appendChild(document.createTextNode(listElements[i]));
-                checkboxHolder.appendChild(tmpDiv);
+                this.shadowRoot.querySelector(".checkbox-div").appendChild(tmpDiv);
             }
-            this.appendChild(checkboxHolder);
+            /*
+            $(this.shadowRoot).find(".checkbox-div").customScrollbar({
+                skin: "default-skin",
+                hScroll: false
+            });
+            //$(this.shadowRoot).find(".checkbox-div").customScrollbar("resize", true);
+            */
         };
 
         Object.defineProperty(proto, "filterList", {
@@ -136,16 +145,6 @@
                 template = importDoc.querySelector("#complexFilterTemplate");
             }
 
-            var checkboxHolder = this.querySelector("ul");
-            var listElements = [];
-            if(checkboxHolder) {
-                var listItems = checkboxHolder.getElementsByTagName("li");
-                for (var i = 0; i < listItems.length; i++) {
-                   listElements.push(listItems[i].innerHTML);
-                }
-                this.setUniverse(listElements);
-            }
-
             var headerLabel = this.querySelector(".title-holder");
             if(headerLabel) {
                 this.header = headerLabel.innerHTML;
@@ -157,7 +156,29 @@
                 clone.querySelector(".auto-complete-input").placeholder = "Search in " + this.header;
             }
 
+            //$(clone).find(".checkbox-div").customScrollbar({fixedThumbHeight: 50, fixedThumbWidth: 60});
+
             root.appendChild(clone);
+
+            var checkboxHolder = this.querySelector("ul");
+            var listElements = [];
+            if(checkboxHolder) {
+                var listItems = checkboxHolder.getElementsByTagName("li");
+                for (var i = 0; i < listItems.length; i++) {
+                   listElements.push(listItems[i].innerHTML);
+                }
+                this.setUniverse(listElements);
+            }
+
+            this.setAutocompleteOnTextBox();
+        };
+
+        proto.setAutocompleteOnTextBox = function() {
+            var protoObj = this;
+            $(this.shadowRoot).find(".auto-complete-input").keyup(function(event) {
+                var tval = $(this).val();
+                $(protoObj.shadowRoot).find(".checkbox-div").find("div").hide().filter(":contains('"+tval+"')").find("div").andSelf().show();
+            });
         };
 
         var ComplexFilter = document.registerElement("complex-filter",{
