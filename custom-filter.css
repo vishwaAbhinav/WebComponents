@@ -1,0 +1,49 @@
+::shadow .outer {
+    border: 2px solid brown;
+    background: navajowhite;
+    font-size: 12pt;
+    width: 12em;
+    height: 8em;
+}
+::shadow .checkbox-div {
+    height: 5em;
+    width: 12em;
+    overflow: auto;
+}
+::shadow .title {
+    display : inline;
+}
+::shadow .toggle-box {
+    display: none;
+    float: right;
+}
+::shadow .toggle-box + ::shadow label {
+    cursor: pointer;
+    display: inline;
+}
+
+::shadow .toggle-box ~ ::shadow .checkbox-div {
+    display : none;
+}
+::shadow .toggle-box:checked ~ ::shadow .checkbox-div{
+    display: block;
+}
+
+::shadow .toggle-box + ::shadow label:before {
+    background-color: #4F5150;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    color: #FFFFFF;
+    content: "+";
+    display: inline;
+    float: right;
+    height: 16px;
+    line-height: 16px;
+    margin-right: 4px;
+    text-align: center;
+    width: 16px;
+}
+::shadow .toggle-box:checked + ::shadow label:before {
+    content: "\2212";
+}
