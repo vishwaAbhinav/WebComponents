@@ -1,139 +1,152 @@
 "use strict";
+const CustomFilter = (function () {
+    document.currentScript = document.currentScript || document._currentScript;
+    var importDoc = document.currentScript.ownerDocument;
 
-document.currentScript = document.currentScript || document._currentScript;
+    // private static
+    var nextId = 1;
 
-var importDoc = document.currentScript.ownerDocument;
-
-var proto = Object.create(HTMLElement.prototype);
-
-Object.defineProperty(proto, "header", { 
-    headerLabel : "",
-    get : function() {return this.headerLabel},
-    set : function(headerLabel) {this.headerLabel = headerLabel}
-});
-
-proto.getHeader = function() {
-    return this.header;
-}
-
-proto.setHeader = function(headerLabel) {
-    this.header = headerLabel;
-
-    var header = this.querySelector("complex-filter .title-holder");
-    if(!header) {
-        header = document.createElement("label");
-    }
-    header.innerHTML = headerLabel;
-    header.setAttribute("class", "title-holder");
-    this.appendChild(header);
-
-    this.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + headerLabel;
-}
-
-proto.getUniverse = function() {
-    return this.listElements;
-}
-
-Object.defineProperty(proto, "listElements", { 
-    elements : [],
-    get : function() {return this.elements},
-    set : function(listElements) {this.elements = listElements}
-});
-
-proto.fireFilterListChangedEvent = function (checkboxState, checkboxText) {
-    if(!this.filterList) {
-        this.filterList = [];
-    }
-    var index = this.filterList.indexOf(checkboxText);
-    if(checkboxState) {
-        if(index == -1) {
-            this.filterList.push(checkboxText);
+    function _setHeader(self) {
+        var header = self.querySelector("complex-filter .title-holder");
+        if(!header) {
+            header = document.createElement("label");
         }
+        header.innerHTML = self.header;
+        header.setAttribute("class", "title-holder");
+        self.appendChild(header);
+
+        self.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
     }
-    else {
-        if(index > -1) {
-            this.filterList.splice(index, 1);
+
+    function _initialize(self) {
+        var root = self.createShadowRoot();
+        var template = document.querySelector("#complexFilterTemplate");
+        if(!template) {
+            template = importDoc.querySelector("#complexFilterTemplate");
         }
+
+        var clone = document.importNode(template.content, true);
+        root.appendChild(clone);
+        /*if(self.header) {
+            clone.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
+        }*/
+
+        var headerLabel = self.querySelector(".title-holder");
+        if(headerLabel) {
+            self.header = headerLabel.innerHTML;
+        }
+
+        //$(clone).find(".checkbox-div").customScrollbar({fixedThumbHeight: 50, fixedThumbWidth: 60});
+
+        var checkboxHolder = self.querySelector("ul");
+        var listElements = [];
+        if(checkboxHolder) {
+            var listItems = checkboxHolder.getElementsByTagName("li");
+            for (var i = 0; i < listItems.length; i++) {
+               listElements.push(listItems[i].innerHTML);
+            }
+            self.universe = listElements;
+        }
+
+        self.setAutocompleteOnTextBox();
     }
 
-    var event =  new CustomEvent('filterListChanged', {'detail' : this.filterList});
+    var proto = Object.create(HTMLElement.prototype);
 
-    this.dispatchEvent(event);
-}
+    // public
+    proto.createdCallback = function() {
+        // private members
+        var _id, _header, _universe, _filterList;
 
-proto.setUniverse = function(listElements) {
-    console.log("Universe is being set for " + this.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + listElements);
-
-    this.listElements = listElements;
-
-    for(var i in listElements) {
-        var tmpDiv = document.createElement("div");
-        tmpDiv.style.display = "block";
-        tmpDiv.style.marginLeft = "80px";
-        var tmpCheck = document.createElement("input");
-        tmpCheck.setAttribute("type", "checkbox");
-
-        var protoObj = this;
-        tmpCheck.addEventListener("change", function() {
-            protoObj.fireFilterListChangedEvent(this.checked, this.parentElement.innerText);
+        // public members (instance only)
+        // defining a read-only property named id with default-value set.
+        Object.defineProperty(this, 'num', {
+            value: nextId++,
+            writable: false,
+            enumerable: true
         });
-        tmpDiv.appendChild(tmpCheck);
-        tmpDiv.appendChild(document.createTextNode(listElements[i]));
-        this.shadowRoot.querySelector(".checkbox-div").appendChild(tmpDiv);
-    }
-};
 
-Object.defineProperty(proto, "filterList", {
-    filterElements: [],
-    get: function() {return this.filterElements;},
-    set: function(filterElements) {this.filterElements = filterElements;}
-});
+        Object.defineProperty(this, "header", {
+            get : function() {return _header},
+            set : function(headerLabel) { _header = headerLabel; _setHeader(this)},
+            writeable: true,
+            enumerable: true
+        });
 
-proto.createdCallback = function() {
-    var root = this.createShadowRoot();
-    var template = document.querySelector("#complexFilterTemplate");
-    if(!template) {
-        template = importDoc.querySelector("#complexFilterTemplate");
-    }
+        Object.defineProperty(this, "universe", {
+            get : function() {return _universe},
+            set : function(universe) { _universe = universe; _setUniverse(this)},
+            writeable: true,
+            enumerable: true
+        });
 
-    var headerLabel = this.querySelector(".title-holder");
-    if(headerLabel) {
-        this.header = headerLabel.innerHTML;
-    }
+        // private method
+        function _setUniverse(self) {
+            console.log("Universe is being set for " + self.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + self.universe);
 
-    var clone = document.importNode(template.content, true);
+            var listElements = self.universe;
+            for(var i in listElements) {
+                var tmpDiv = document.createElement("div");
+                tmpDiv.style.display = "block";
+                tmpDiv.style.marginLeft = "80px";
+                var tmpCheck = document.createElement("input");
+                tmpCheck.setAttribute("type", "checkbox");
 
-    if(this.header) {
-        clone.querySelector(".auto-complete-input").placeholder = "Search in " + this.header;
-    }
-
-    //$(clone).find(".checkbox-div").customScrollbar({fixedThumbHeight: 50, fixedThumbWidth: 60});
-
-    root.appendChild(clone);
-
-    var checkboxHolder = this.querySelector("ul");
-    var listElements = [];
-    if(checkboxHolder) {
-        var listItems = checkboxHolder.getElementsByTagName("li");
-        for (var i = 0; i < listItems.length; i++) {
-           listElements.push(listItems[i].innerHTML);
+                tmpCheck.addEventListener("change", function() {
+                    _fireFilterListChangedEvent(self, this.checked, this.parentElement.innerText);
+                });
+                tmpDiv.appendChild(tmpCheck);
+                tmpDiv.appendChild(document.createTextNode(listElements[i]));
+                self.shadowRoot.querySelector(".checkbox-div").appendChild(tmpDiv);
+            }
         }
-        this.setUniverse(listElements);
-    }
 
-    this.setAutocompleteOnTextBox();
-};
+        function _fireFilterListChangedEvent(self, checkboxState, checkboxText) {
+            if(!_filterList) {
+                _filterList = [];
+            }
+            var index = _filterList.indexOf(checkboxText);
+            if(checkboxState) {
+                if(index == -1) {
+                    _filterList.push(checkboxText);
+                }
+            }
+            else {
+                if(index > -1) {
+                    _filterList.splice(index, 1);
+                }
+            }
 
-proto.setAutocompleteOnTextBox = function() {
-    var protoObj = this;
-    $(this.shadowRoot).find(".auto-complete-input").keyup(function(event) {
-        var tval = $(this).val();
-        $(protoObj.shadowRoot).find(".checkbox-div").find("div").hide().filter(":contains('"+tval+"')").find("div").andSelf().show();
+            var event =  new CustomEvent('filterListChanged', {'detail' : _filterList});
+            self.dispatchEvent(event);
+        }
+
+        _initialize(this);
+
+        // locking this object to make sure no memers are added / removed. Members are still writeable.
+        Object.seal(this);
+    };
+
+    proto.setAutocompleteOnTextBox = function() {
+        var self = this;
+        $(this.shadowRoot).find(".auto-complete-input").keyup(function(event) {
+            var tval = $(this).val();
+            $(self.shadowRoot).find(".checkbox-div").find("div").hide().filter(":contains('"+tval+"')").find("div").andSelf().show();
+        });
+    };
+
+    var CustomFilterElement = document.registerElement("complex-filter",{
+          prototype : proto
     });
-};
 
-var ComplexFilter = document.registerElement("complex-filter",{
-  prototype : proto
-});
+    // freezing the prototype so that one can't add / remove methods through prototype.
+    // This has to be done after element registration
+    Object.freeze(proto);
 
-Object.freeze(proto);
+    // public static. One can access with classname itslef
+    CustomFilterElement.getNextId = function () {
+        return nextId;
+    };
+
+    return CustomFilterElement;
+})();

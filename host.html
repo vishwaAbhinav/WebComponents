@@ -8,11 +8,11 @@
 	<body>
 		<script>
 			"use strict";
-			var Bundles = new ComplexFilter();
-			Bundles.setHeader("Bundles");
+			var Bundles = new CustomFilter();
+			Bundles.header = "Bundles";
 
 			var listElements = ["Bundle 1", "Bundle 2", "Bundle 3", "Bundle 4","Bundle 5", "Bundle 6", "Bundle 7", "Bundle 8", "Bundle 9", "Bundle 10"];
-			Bundles.setUniverse(listElements);
+			Bundles.universe = listElements;
 			document.body.appendChild(Bundles);
 
 			Bundles.addEventListener("filterListChanged", function(e) {
