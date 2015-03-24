@@ -1,14 +1,10 @@
 "use strict";
 
-if(document.currentScript && document.currentScript != null) {
-    var importDoc = document.currentScript.ownerDocument;
-}
-else {
-    var importDoc = document._currentScript.ownerDocument;
-}
+document.currentScript = document.currentScript || document._currentScript;
 
-var proto = Object.create(HTMLElement.prototype, {
-});
+var importDoc = document.currentScript.ownerDocument;
+
+var proto = Object.create(HTMLElement.prototype);
 
 Object.defineProperty(proto, "header", { 
     headerLabel : "",
@@ -139,3 +135,5 @@ proto.setAutocompleteOnTextBox = function() {
 var ComplexFilter = document.registerElement("complex-filter",{
   prototype : proto
 });
+
+Object.freeze(proto);
