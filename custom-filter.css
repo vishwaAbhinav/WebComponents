@@ -1,14 +1,19 @@
 ::shadow .outer {
     border: 2px solid brown;
     background: navajowhite;
-    font-size: 12pt;
+    font-size: 2.5ex;
     width: 12em;
-    height: 8em;
+    height: 14ex;
 }
 ::shadow .checkbox-div {
-    height: 5em;
+    height: 7.5ex;
+    line-height: 2.5ex;
     width: 12em;
     overflow: auto;
+}
+::shadow .auto-complete-input {
+    width: 14.5em;
+    height: 2.5ex;
 }
 ::shadow .title {
     display : inline;

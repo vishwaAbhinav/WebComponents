@@ -7,15 +7,19 @@ const CustomFilter = (function () {
     var nextId = 1;
 
     function _setHeader(self) {
-        var header = self.querySelector("complex-filter .title-holder");
+        var header = self.querySelector("complex-filter title-holder");
         if(!header) {
-            header = document.createElement("label");
+            header = document.createElement("title-holder");
         }
         header.innerHTML = self.header;
-        header.setAttribute("class", "title-holder");
         self.appendChild(header);
 
         self.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
+    }
+
+    function _setHeight(self) {
+        var checkboxHeight = self.shadowRoot.querySelector(".checkbox-div").style.height = (+self.height * +2.5) + "ex";
+        self.shadowRoot.querySelector(".outer").style.height = +checkboxHeight.replace(/[^-\d\.]/g, '') + +6.5 + "ex";
     }
 
     function _initialize(self) {
@@ -27,16 +31,11 @@ const CustomFilter = (function () {
 
         var clone = document.importNode(template.content, true);
         root.appendChild(clone);
-        /*if(self.header) {
-            clone.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
-        }*/
 
-        var headerLabel = self.querySelector(".title-holder");
+        var headerLabel = self.querySelector("title-holder");
         if(headerLabel) {
             self.header = headerLabel.innerHTML;
         }
-
-        //$(clone).find(".checkbox-div").customScrollbar({fixedThumbHeight: 50, fixedThumbWidth: 60});
 
         var checkboxHolder = self.querySelector("ul");
         var listElements = [];
@@ -48,7 +47,19 @@ const CustomFilter = (function () {
             self.universe = listElements;
         }
 
-        self.setAutocompleteOnTextBox();
+        _setAutocompleteOnTextBox(self);
+    }
+
+    function _setAutocompleteOnTextBox(self){
+        $(self.shadowRoot).find(".auto-complete-input").keyup(function(event) {
+            var tval = $(this).val();
+            $(self.shadowRoot).find(".checkbox-div").find("div").hide().filter(":contains('"+tval+"')").find("div").andSelf().show();
+        });
+
+        $(self.shadowRoot).find(".auto-complete-input").focus(function(event) {
+            $(this).val("");
+            $(self.shadowRoot).find(".checkbox-div").find("div").show();
+        });
     }
 
     var proto = Object.create(HTMLElement.prototype);
@@ -56,7 +67,7 @@ const CustomFilter = (function () {
     // public
     proto.createdCallback = function() {
         // private members
-        var _id, _header, _universe, _filterList;
+        var _id, _header, _universe, _filterList, _height;
 
         // public members (instance only)
         // defining a read-only property named id with default-value set.
@@ -80,9 +91,16 @@ const CustomFilter = (function () {
             enumerable: true
         });
 
+        Object.defineProperty(this, "height", {
+            get : function() {return _height},
+            set : function(height) { _height = height; _setHeight(this)},
+            writeable: true,
+            enumerable: true
+        });
+
         // private method
         function _setUniverse(self) {
-            console.log("Universe is being set for " + self.getElementsByClassName("title-holder")[0].innerHTML + " with list : " + self.universe);
+            console.log("Universe is being set for " + self.querySelector("title-holder").innerHTML + " with list : " + self.universe);
 
             var listElements = self.universe;
             for(var i in listElements) {
@@ -127,14 +145,6 @@ const CustomFilter = (function () {
         Object.seal(this);
     };
 
-    proto.setAutocompleteOnTextBox = function() {
-        var self = this;
-        $(this.shadowRoot).find(".auto-complete-input").keyup(function(event) {
-            var tval = $(this).val();
-            $(self.shadowRoot).find(".checkbox-div").find("div").hide().filter(":contains('"+tval+"')").find("div").andSelf().show();
-        });
-    };
-
     var CustomFilterElement = document.registerElement("complex-filter",{
           prototype : proto
     });
@@ -149,4 +159,12 @@ const CustomFilter = (function () {
     };
 
     return CustomFilterElement;
+})();
+
+const TitleHolder = (function() {
+    var TitleHolderElement = document.registerElement("title-holder",{
+          prototype : Object.create(HTMLLabelElement.prototype),
+          extends : "label"
+    });
+    return TitleHolderElement;
 })();
