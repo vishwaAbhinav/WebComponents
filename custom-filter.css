@@ -23,8 +23,8 @@
     font-style: normal;
 }
 custom-filter /deep/ .toggle::before {
-    content: '\21D3';
+    content: '\25BC';
 }
 custom-filter /deep/ .toggleClicked::before {
-    content: '\21D0';
+    content: '\25C4';
 }
