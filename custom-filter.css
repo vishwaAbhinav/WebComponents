@@ -3,10 +3,8 @@
     background: navajowhite;
     font-size: 2.5ex;
     width: 12em;
-    height: 14ex;
 }
 ::shadow .checkbox-div {
-    height: 7.5ex;
     line-height: 2.5ex;
     width: 12em;
     overflow: auto;
@@ -18,37 +16,15 @@
 ::shadow .title {
     display : inline;
 }
-::shadow .toggle-box {
-    display: none;
+::shadow .toggle, ::shadow .toggleClicked {
+    display: inline;
     float: right;
-}
-::shadow .toggle-box + ::shadow label {
     cursor: pointer;
-    display: inline;
+    font-style: normal;
 }
-
-::shadow .toggle-box ~ ::shadow .checkbox-div {
-    display : none;
+custom-filter /deep/ .toggle::before {
+    content: '\21D3';
 }
-::shadow .toggle-box:checked ~ ::shadow .checkbox-div{
-    display: block;
-}
-
-::shadow .toggle-box + ::shadow label:before {
-    background-color: #4F5150;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
-    color: #FFFFFF;
-    content: "+";
-    display: inline;
-    float: right;
-    height: 16px;
-    line-height: 16px;
-    margin-right: 4px;
-    text-align: center;
-    width: 16px;
-}
-::shadow .toggle-box:checked + ::shadow label:before {
-    content: "\2212";
+custom-filter /deep/ .toggleClicked::before {
+    content: '\21D0';
 }

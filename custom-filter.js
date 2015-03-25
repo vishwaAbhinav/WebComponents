@@ -7,7 +7,7 @@ const CustomFilter = (function () {
     var nextId = 1;
 
     function _setHeader(self) {
-        var header = self.querySelector("complex-filter title-holder");
+        var header = self.querySelector("custom-filter title-holder");
         if(!header) {
             header = document.createElement("title-holder");
         }
@@ -17,8 +17,8 @@ const CustomFilter = (function () {
         self.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
     }
 
-    function _setHeight(self) {
-        var checkboxHeight = self.shadowRoot.querySelector(".checkbox-div").style.height = (+self.height * +2.5) + "ex";
+    function _setVisibleElements(self) {
+        var checkboxHeight = self.shadowRoot.querySelector(".checkbox-div").style.height = (+self.visibleElements * +2.5) + "ex";
         self.shadowRoot.querySelector(".outer").style.height = +checkboxHeight.replace(/[^-\d\.]/g, '') + +6.5 + "ex";
     }
 
@@ -47,7 +47,28 @@ const CustomFilter = (function () {
             self.universe = listElements;
         }
 
+        //Setting default visible elements to 4
+        self.visibleElements = 4;
+
         _setAutocompleteOnTextBox(self);
+        _makeCheckboxDivCollapsable(self);
+    }
+
+    function _makeCheckboxDivCollapsable(self) {
+        $(self.shadowRoot).find(".toggle").click(function(event) {
+            if($(self.shadowRoot).find(".checkbox-div").is(":visible")) {
+                $(self.shadowRoot).find(".checkbox-div").hide();
+                $(self.shadowRoot).find(".auto-complete-input").hide();
+                $(self.shadowRoot).find(".outer").height("2.5ex");
+                $(self.shadowRoot).find(".toggle").addClass("toggleClicked").removeClass("toggle");
+            }
+            else {
+                $(self.shadowRoot).find(".checkbox-div").show();
+                $(self.shadowRoot).find(".auto-complete-input").show();
+                $(self.shadowRoot).find(".outer").height((+self.visibleElements * +2.5) + +6.5 + "ex");
+                $(self.shadowRoot).find(".toggleClicked").addClass("toggle").removeClass("toggleClicked");
+            }
+        });
     }
 
     function _setAutocompleteOnTextBox(self){
@@ -67,7 +88,7 @@ const CustomFilter = (function () {
     // public
     proto.createdCallback = function() {
         // private members
-        var _id, _header, _universe, _filterList, _height;
+        var _id, _header, _universe, _filterList, _visibleElements;
 
         // public members (instance only)
         // defining a read-only property named id with default-value set.
@@ -91,9 +112,9 @@ const CustomFilter = (function () {
             enumerable: true
         });
 
-        Object.defineProperty(this, "height", {
-            get : function() {return _height},
-            set : function(height) { _height = height; _setHeight(this)},
+        Object.defineProperty(this, "visibleElements", {
+            get : function() {return _visibleElements},
+            set : function(visibleElements) { _visibleElements = visibleElements; _setVisibleElements(this)},
             writeable: true,
             enumerable: true
         });
@@ -145,7 +166,7 @@ const CustomFilter = (function () {
         Object.seal(this);
     };
 
-    var CustomFilterElement = document.registerElement("complex-filter",{
+    var CustomFilterElement = document.registerElement("custom-filter",{
           prototype : proto
     });
 

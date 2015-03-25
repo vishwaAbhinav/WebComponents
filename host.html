@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8">
 		<script src="bower_components/webcomponents.js/webcomponents.min.js" ></script>
 
 		<link rel="import" href="custom-filter.html">
@@ -13,15 +14,15 @@
 
 			var listElements = ["Bundle 1", "Bundle 2", "Bundle 3", "Bundle 4","Bundle 5", "Bundle 6", "Bundle 7", "Bundle 8", "Bundle 9", "Bundle 10"];
 			Bundles.universe = listElements;
-			Bundles.height = 7;
+			Bundles.visibleElements = 7;
 			document.body.appendChild(Bundles);
 
 			Bundles.addEventListener("filterListChanged", function(e) {
 				console.log(e.detail);
 			});
 		</script>
-		
-		<complex-filter id="portfolio">
+		<br>
+		<custom-filter id="portfolio">
 			<title-holder>Portfolio</title-holder>
 			<ul>
 				<li>Portfolio 1</li>
@@ -30,7 +31,7 @@
 				<li>Portfolio 4</li>
 				<li>Portfolio 5</li>
 			</ul>
-		</complex-filter>
+		</custom-filter>
 		<script>
 			var Portfolio = document.getElementById("portfolio");
 			Portfolio.addEventListener("filterListChanged", function(e) {
