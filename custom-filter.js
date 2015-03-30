@@ -1,7 +1,7 @@
 "use strict";
 const CustomFilter = (function () {
-    document.currentScript = document.currentScript || document._currentScript;
-    var importDoc = document.currentScript.ownerDocument;
+    var currentScriptElement = document.currentScript || document._currentScript;
+    var importDoc = currentScriptElement.ownerDocument;
 
     // private static
     var nextId = 1;
@@ -19,14 +19,14 @@ const CustomFilter = (function () {
 
     function _setVisibleElements(self) {
         var checkboxHeight = self.shadowRoot.querySelector(".checkbox-div").style.height = (+self.visibleElements * +2.5) + "ex";
-        self.shadowRoot.querySelector(".outer").style.height = +checkboxHeight.replace(/[^-\d\.]/g, '') + +6.5 + "ex";
+        self.shadowRoot.querySelector(".outer").style.height = +checkboxHeight.replace(/[^-\d\.]/g, '') + +4.0 + "ex";
     }
 
     function _initialize(self) {
         var root = self.createShadowRoot();
-        var template = document.querySelector("#complexFilterTemplate");
+        var template = document.querySelector("#customFilterTemplate");
         if(!template) {
-            template = importDoc.querySelector("#complexFilterTemplate");
+            template = importDoc.querySelector("#customFilterTemplate");
         }
 
         var clone = document.importNode(template.content, true);
@@ -48,13 +48,14 @@ const CustomFilter = (function () {
         }
 
         //Setting default visible elements to 4
-        self.visibleElements = 4;
+        self.visibleElements = self.getAttribute("visibleElements") || 4;
 
         _setAutocompleteOnTextBox(self);
-        _makeCheckboxDivCollapsable(self);
+        _makeCheckboxDivCollapsible(self);
+        _makeSearchBoxCollapsible(self);
     }
 
-    function _makeCheckboxDivCollapsable(self) {
+    function _makeCheckboxDivCollapsible(self) {
         $(self.shadowRoot).find(".toggle").click(function(event) {
             if($(self.shadowRoot).find(".checkbox-div").is(":visible")) {
                 $(self.shadowRoot).find(".checkbox-div").hide();
@@ -64,9 +65,25 @@ const CustomFilter = (function () {
             }
             else {
                 $(self.shadowRoot).find(".checkbox-div").show();
-                $(self.shadowRoot).find(".auto-complete-input").show();
-                $(self.shadowRoot).find(".outer").height((+self.visibleElements * +2.5) + +6.5 + "ex");
+                $(self.shadowRoot).find(".outer").height((+self.visibleElements * +2.5) + +4.0 + "ex");
                 $(self.shadowRoot).find(".toggleClicked").addClass("toggle").removeClass("toggleClicked");
+            }
+        });
+    }
+
+    function _makeSearchBoxCollapsible(self) {
+        $(self.shadowRoot).find(".search-icon").click(function(event) {
+            if($(self.shadowRoot).find(".checkbox-div").is(":visible")) {
+                if($(self.shadowRoot).find(".auto-complete-input").is(":visible")) {
+                    $(self.shadowRoot).find(".auto-complete-input").hide();
+                    var currentOuterBoxHeight = $(self.shadowRoot).find(".outer").height();
+                    $(self.shadowRoot).find(".outer").height(currentOuterBoxHeight - $(self.shadowRoot).find(".auto-complete-input").height());
+                }
+                else {
+                    $(self.shadowRoot).find(".auto-complete-input").show();
+                    var currentOuterBoxHeight = $(self.shadowRoot).find(".outer").height();
+                    $(self.shadowRoot).find(".outer").height(currentOuterBoxHeight + $(self.shadowRoot).find(".auto-complete-input").height());
+                }
             }
         });
     }
@@ -74,7 +91,7 @@ const CustomFilter = (function () {
     function _setAutocompleteOnTextBox(self){
         $(self.shadowRoot).find(".auto-complete-input").keyup(function(event) {
             var tval = $(this).val();
-            $(self.shadowRoot).find(".checkbox-div").find("div").hide().filter(":contains('"+tval+"')").find("div").andSelf().show();
+            $(self.shadowRoot).find(".checkbox-div").find("li,li li,li li li").hide().filter(":contains('"+tval+"')").find("ul, li").andSelf().show();
         });
 
         $(self.shadowRoot).find(".auto-complete-input").focus(function(event) {
@@ -124,6 +141,28 @@ const CustomFilter = (function () {
             console.log("Universe is being set for " + self.querySelector("title-holder").innerHTML + " with list : " + self.universe);
 
             var listElements = self.universe;
+
+            var userList = self.querySelector("ul").cloneNode(true);
+            var parentList = document.createElement("ul");
+            var parentNode = document.createElement("li");
+            parentNode.appendChild(document.createTextNode("All"));
+            parentNode.appendChild(userList);
+            parentList.appendChild(parentNode);
+            $(parentList).bonsai({expandAll: true,
+                                  checkboxes: true,
+                                  createCheckboxes: true 
+            });
+            self.shadowRoot.querySelector(".checkbox-div").appendChild(parentList);
+            var checkboxNodes = self.shadowRoot.querySelectorAll("input[type='checkbox']");
+
+            for(var i = 0; i < checkboxNodes.length; i++) {
+                checkboxNodes[i].addEventListener("change", function() {
+                    if(this.checked) {
+                        _fireFilterListChangedEvent(self, this.checked, self.shadowRoot.querySelector("label[for=" + this.id + "]").innerText);
+                    }
+                });
+            }
+            /*
             for(var i in listElements) {
                 var tmpDiv = document.createElement("div");
                 tmpDiv.style.display = "block";
@@ -138,6 +177,7 @@ const CustomFilter = (function () {
                 tmpDiv.appendChild(document.createTextNode(listElements[i]));
                 self.shadowRoot.querySelector(".checkbox-div").appendChild(tmpDiv);
             }
+            */
         }
 
         function _fireFilterListChangedEvent(self, checkboxState, checkboxText) {

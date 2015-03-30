@@ -3,12 +3,12 @@
 	<head>
 		<meta charset="utf-8">
 		<script src="bower_components/webcomponents.js/webcomponents.min.js" ></script>
-
 		<link rel="import" href="custom-filter.html">
 	</head>
 	<body>
 		<script>
 			"use strict";
+			/*
 			var Bundles = new CustomFilter();
 			Bundles.header = "Bundles";
 
@@ -19,15 +19,20 @@
 
 			Bundles.addEventListener("filterListChanged", function(e) {
 				console.log(e.detail);
-			});
+			});*/
 		</script>
 		<br>
-		<custom-filter id="portfolio">
+		<custom-filter id="portfolio" visibleElements="5">
 			<title-holder>Portfolio</title-holder>
 			<ul>
 				<li>Portfolio 1</li>
 				<li>Portfolio 2</li>
-				<li>Portfolio 3</li>
+				<li>Portfolio 3
+					<ul>
+						<li>Sub portfolio 1</li>
+						<li>Sub portfolio 2</li>
+					</ul>
+				</li>
 				<li>Portfolio 4</li>
 				<li>Portfolio 5</li>
 			</ul>

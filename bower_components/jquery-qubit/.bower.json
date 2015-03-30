@@ -1,0 +1,36 @@
+{
+  "name": "jquery-qubit",
+  "version": "2.0.4",
+  "homepage": "https://github.com/aexmachina/jquery-qubit",
+  "authors": [
+    "aexmachina"
+  ],
+  "description": "Provides the semantics for a nested list of tri-state checkboxes, using the HTML5 \"indeterminate\" property",
+  "main": "jquery.qubit.js",
+  "keywords": [
+    "jquery",
+    "checkbox",
+    "indeterminate"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "*"
+  },
+  "_release": "2.0.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.4",
+    "commit": "26751fb4a71ada8f1a15252374706547ef161aa7"
+  },
+  "_source": "git://github.com/aexmachina/jquery-qubit.git",
+  "_target": "~2.0.4",
+  "_originalSource": "jquery-qubit",
+  "_direct": true
+}
