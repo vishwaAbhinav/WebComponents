@@ -15,11 +15,28 @@ module.exports = function(grunt) {
           dest : 'components/ArcComponents.css'
         }
       },
-      clean: ['components/ArcComponents.*']
+      clean: ['components/ArcComponents.*'],
+      vulcanize : {
+        default : {
+          options : {
+            inline : true,
+            excludes : {
+              scripts : [
+                '.*'
+              ]
+            }
+          },
+          files : {
+            'ArcComponentsBuild.html': 'components/custom-filter.html'
+          }
+        }
+      }
+
     });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-vulcanize');
 
-  grunt.registerTask('default', ['clean', 'concat']);
+  grunt.registerTask('default', ['clean', 'vulcanize']);
 }

@@ -1,5 +1,5 @@
 "use strict";
-const CustomFilter = (function () {
+var CustomFilter = (function () {
     var currentScriptElement = document._currentScript || document.currentScript;
     var importDoc = currentScriptElement.ownerDocument;
 

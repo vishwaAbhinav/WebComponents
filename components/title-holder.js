@@ -1,4 +1,4 @@
-const TitleHolder = (function() {
+var TitleHolder = (function() {
     var TitleHolderElement = document.registerElement("title-holder",{
           prototype : Object.create(HTMLLabelElement.prototype),
           extends : "label"

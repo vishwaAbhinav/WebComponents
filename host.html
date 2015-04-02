@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
-		<script src="../bower_components/webcomponentsjs/webcomponents.min.js" ></script>
-		<link rel="import" href="components/custom-filter.html">
+		<script type="text/javascript" src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+
+		<link rel="import" href="ArcComponentsBuild.html">
 	</head>
 	<body>
 		<script>
 			"use strict";
-			/*
-			var Bundles = new CustomFilter();
-			Bundles.header = "Bundles";
+			window.addEventListener('WebComponentsReady', function(e) {
+        		var Bundles = new CustomFilter();
+				Bundles.header = "Bundles";
 
-			var listElements = ["Bundle 1", "Bundle 2", "Bundle 3", "Bundle 4","Bundle 5", "Bundle 6", "Bundle 7", "Bundle 8", "Bundle 9", "Bundle 10"];
-			Bundles.universe = listElements;
-			Bundles.visibleElements = 7;
-			document.body.appendChild(Bundles);
+				var listElements = ["Bundle 1", "Bundle 2", "Bundle 3", "Bundle 4","Bundle 5", "Bundle 6", "Bundle 7", "Bundle 8", "Bundle 9", "Bundle 10"];
+				Bundles.universe = listElements;
+				Bundles.visibleElements = 7;
+				document.body.appendChild(Bundles);
 
-			Bundles.addEventListener("filterListChanged", function(e) {
-				console.log(e.detail);
-			});*/
+				Bundles.addEventListener("filterListChanged", function(e) {
+					console.log(e.detail);
+				});
+
+			});
 		</script>
 		<br>
 		<custom-filter id="portfolio" visibleElements="5">
