@@ -10,10 +10,17 @@
   "author": "Abhinav Vishwa (avishwa18@gmail.com)",
   "devDependencies": {
     "grunt": "~0.4.5",
-    "grunt-contrib-clean": "~0.6.0",
-    "grunt-vulcanize": "~0.6.4"
-  },
-  "dependencies": {
-    "grunt-contrib-concat": "~0.5.1"
+    "bower": "~1.4.1",
+    "vulcanize": "~0.7.10",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-concat": "0.4.0",
+    "grunt-contrib-cssmin": "0.9.0",
+    "grunt-contrib-uglify": "0.4.0",
+    "grunt-usemin": "3.0.0",
+    "grunt-dom-munger": "~3.4.0",
+    "grunt-vulcanize": "~0.6.4",
+    "grunt-html-validation": "~0.1.18",
+    "grunt-htmllint": "~0.2.6",
+    "grunt-contrib-htmlmin": "~0.4.0"
   }
 }
