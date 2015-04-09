@@ -7,14 +7,11 @@ var CustomFilter = (function () {
     var nextId = 1;
 
     function _setHeader(self) {
-        var header = self.querySelector("custom-filter title-holder");
-        if(!header) {
-            header = document.createElement("title-holder");
+        if(self.header) {
+            self.setAttribute("header", self.header);
+            self.shadowRoot.querySelector(".title").appendChild(document.createTextNode(self.header));
+            self.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
         }
-        header.innerHTML = self.header;
-        self.appendChild(header);
-
-        self.shadowRoot.querySelector(".auto-complete-input").placeholder = "Search in " + self.header;
     }
 
     function _setVisibleElements(self) {
@@ -32,9 +29,8 @@ var CustomFilter = (function () {
         var clone = document.importNode(template.content, true);
         root.appendChild(clone);
 
-        var headerLabel = self.querySelector("title-holder");
-        if(headerLabel) {
-            self.header = headerLabel.innerHTML;
+        if(self.getAttribute("header")) {
+            self.header = self.getAttribute("header");
         }
 
         var checkboxHolder = self.querySelector("ul");
@@ -138,7 +134,7 @@ var CustomFilter = (function () {
 
         // private method
         function _setUniverse(self) {
-            console.log("Universe is being set for " + self.querySelector("title-holder").innerHTML + " with list : " + self.universe);
+            console.log("Universe is being set for " + self.getAttribute("header")+ " with list : " + self.universe);
 
             var listElements = self.universe;
 
